@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clarity — CBT · DBT · ACT Journal</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231a0533'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%23c084fc' stroke-width='2.5'/%3E%3Cpath d='M32 20 Q38 26 32 32 Q26 38 32 44' fill='none' stroke='%23c084fc' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='3' fill='%23c084fc'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0a1a;
+  --bg2: #160d26;
+  --surface: #1e1430;
+  --surface2: #261a3d;
+  --border: #3d2b5e;
+  --border2: #5a3f80;
+  --purple: #c084fc;
+  --purple-dim: #a855f7;
+  --teal: #2dd4bf;
+  --amber: #fbbf24;
+  --rose: #fb7185;
+  --green: #4ade80;
+  --blue: #60a5fa;
+  --text: #f0eaff;
+  --text-muted: #9d8ec0;
+  --text-dim: #5a4d78;
+  --cbt: #60a5fa;
+  --dbt: #f472b6;
+  --act: #4ade80;
+  --danger: #fb7185;
+  --r: 12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 0%, rgba(168,85,247,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 70% at 85% 100%, rgba(45,212,191,0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(251,191,36,0.04) 0%, transparent 70%);
+  pointer-events:none;
+  z-index:0;
+}
+
+#app {
+  position:relative;
+  z-index:1;
+  max-width:900px;
+  margin:0 auto;
+  padding:0 16px 80px;
+}
+
+/* ── HEADER ── */
+header {
+  padding:28px 0 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  margin-bottom:28px;
+}
+.logo-wrap { display:flex; align-items:center; gap:12px; }
+.logo-svg { flex-shrink:0; }
+.logo {
+  font-family:'DM Serif Display',serif;
+  font-size:1.9rem;
+  letter-spacing:-0.02em;
+  background: linear-gradient(135deg, #c084fc 0%, #60a5fa 50%, #2dd4bf 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.tagline {
+  font-size:0.7rem;
+  color:var(--text-muted);
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  margin-top:3px;
+}
+.api-pill {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-family:'DM Mono',monospace;
+  font-size:0.68rem;
+  padding:5px 10px;
+  border-radius:20px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--text-muted);
+}
+.api-pill .dot { width:6px;height:6px;border-radius:50%;background:var(--text-dim); }
+.api-pill.ok { border-color:rgba(74,222,128,0.4); color:var(--green); }
+.api-pill.ok .dot { background:var(--green); box-shadow:0 0 6px var(--green); }
+
+/* ── NAV ── */
+nav {
+  display:flex;
+  gap:4px;
+  margin-bottom:28px;
+  background:var(--surface);
+  padding:5px;
+  border-radius:var(--r);
+  border:1px solid var(--border);
+  overflow-x:auto;
+}
+nav::-webkit-scrollbar { display:none; }
+.nav-btn {
+  flex:1;
+  min-width:fit-content;
+  padding:10px 10px;
+  border:none;
+  background:transparent;
+  color:var(--text-muted);
+  font-family:'DM Sans',sans-serif;
+  font-size:0.8rem;
+  border-radius:8px;
+  cursor:pointer;
+  transition:all 0.18s;
+  font-weight:400;
+  white-space:nowrap;
+}
+.nav-btn:hover { color:var(--text); background:var(--surface2); }
+.nav-btn.active {
+  color:var(--text);
+  background: linear-gradient(135deg, rgba(192,132,252,0.25), rgba(96,165,250,0.15));
+  border:1px solid rgba(192,132,252,0.35);
+  font-weight:500;
+}
+
+/* ── SECTION HEADERS ── */
+.section-title {
+  font-family:'DM Serif Display',serif;
+  font-size:1.6rem;
+  margin-bottom:6px;
+  letter-spacing:-0.01em;
+  background:linear-gradient(90deg, #c084fc, #60a5fa);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.section-sub {
+  font-size:0.83rem;
+  color:var(--text-muted);
+  margin-bottom:24px;
+  line-height:1.65;
+}
+
+/* ── CARDS ── */
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:22px;
+  margin-bottom:14px;
+  transition:border-color 0.2s;
+}
+.card:hover { border-color:var(--border2); }
+
+/* ── TAGS ── */
+.tag {
+  display:inline-block;
+  font-family:'DM Mono',monospace;
+  font-size:0.63rem;
+  letter-spacing:0.08em;
+  padding:3px 8px;
+  border-radius:4px;
+  text-transform:uppercase;
+  font-weight:500;
+}
+.tag.cbt { background:rgba(96,165,250,0.15); color:var(--cbt); border:1px solid rgba(96,165,250,0.3); }
+.tag.dbt { background:rgba(244,114,182,0.15); color:var(--dbt); border:1px solid rgba(244,114,182,0.3); }
+.tag.act { background:rgba(74,222,128,0.15); color:var(--act); border:1px solid rgba(74,222,128,0.3); }
+.tag.journal { background:rgba(251,191,36,0.15); color:var(--amber); border:1px solid rgba(251,191,36,0.3); }
+
+/* ── FORMS ── */
+label {
+  display:block;
+  font-size:0.72rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--purple);
+  margin-bottom:7px;
+  font-weight:500;
+}
+input, textarea, select {
+  width:100%;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:0.88rem;
+  padding:11px 13px;
+  outline:none;
+  transition:border-color 0.18s;
+  resize:none;
+}
+input:focus, textarea:focus, select:focus { border-color:var(--purple); box-shadow:0 0 0 2px rgba(192,132,252,0.12); }
+textarea { line-height:1.65; }
+select option { background:var(--surface2); }
+.form-row { margin-bottom:16px; }
+
+/* ── MOOD BUTTONS ── */
+.mood-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px; }
+.mood-btn {
+  padding:6px 13px;
+  border-radius:20px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text-muted);
+  font-size:0.78rem;
+  cursor:pointer;
+  transition:all 0.15s;
+  font-family:'DM Sans',sans-serif;
+}
+.mood-btn:hover { border-color:var(--purple); color:var(--text); }
+.mood-btn.selected {
+  border-color:var(--purple);
+  background:rgba(192,132,252,0.18);
+  color:var(--purple);
+  font-weight:500;
+}
+
+/* ── SLIDER ── */
+input[type=range] { padding:0; height:4px; accent-color:var(--purple); cursor:pointer; }
+.slider-labels { display:flex; justify-content:space-between; font-size:0.68rem; color:var(--text-dim); font-family:'DM Mono',monospace; margin-top:6px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:10px 18px;
+  border-radius:8px;
+  border:none;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.84rem;
+  font-weight:500;
+  cursor:pointer;
+  transition:all 0.18s;
+}
+.btn-primary {
+  background:linear-gradient(135deg, #a855f7, #6366f1);
+  color:#fff;
+  box-shadow:0 2px 12px rgba(168,85,247,0.35);
+}
+.btn-primary:hover { box-shadow:0 4px 20px rgba(168,85,247,0.5); transform:translateY(-1px); }
+.btn-ghost {
+  background:transparent;
+  color:var(--text-muted);
+  border:1px solid var(--border);
+}
+.btn-ghost:hover { color:var(--text); border-color:var(--border2); }
+.btn-teal {
+  background:linear-gradient(135deg, #0d9488, #0891b2);
+  color:#fff;
+  box-shadow:0 2px 10px rgba(45,212,191,0.25);
+}
+.btn-teal:hover { box-shadow:0 4px 16px rgba(45,212,191,0.4); transform:translateY(-1px); }
+.btn-sm { padding:7px 13px; font-size:0.76rem; }
+.btn:disabled { opacity:0.4; cursor:not-allowed; transform:none !important; }
+
+/* ── JOURNAL ENTRIES ── */
+.entry-card { position:relative; padding:18px 22px; }
+.entry-meta { display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+.entry-date { font-family:'DM Mono',monospace; font-size:0.66rem; color:var(--text-dim); }
+.entry-body { font-size:0.87rem; line-height:1.7; color:#d4cce8; margin-bottom:10px; white-space:pre-wrap; }
+.entry-thoughts { font-size:0.79rem; color:var(--text-muted); font-style:italic; padding:9px 13px; border-left:2px solid var(--border2); margin-bottom:8px; }
+.entry-ai {
+  background:rgba(192,132,252,0.07);
+  border:1px solid rgba(192,132,252,0.2);
+  border-radius:8px;
+  padding:12px 15px;
+  font-size:0.81rem;
+  line-height:1.7;
+  color:#cbb8e8;
+  margin-top:10px;
+}
+.entry-ai .ai-label {
+  font-family:'DM Mono',monospace;
+  font-size:0.6rem;
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  color:var(--purple);
+  margin-bottom:6px;
+  display:block;
+}
+.delete-btn {
+  position:absolute;
+  top:14px; right:14px;
+  background:none; border:none;
+  color:var(--text-dim);
+  cursor:pointer;
+  font-size:1.1rem;
+  padding:3px;
+  border-radius:4px;
+  transition:color 0.15s;
+}
+.delete-btn:hover { color:var(--danger); }
+
+/* ── SKILLS GRID ── */
+.skills-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; margin-bottom:24px; }
+.skill-card { cursor:pointer; transition:all 0.2s; padding:18px; }
+.skill-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.3); }
+.skill-card.cbt-card:hover { border-color:var(--cbt); box-shadow:0 8px 24px rgba(96,165,250,0.15); }
+.skill-card.dbt-card:hover { border-color:var(--dbt); box-shadow:0 8px 24px rgba(244,114,182,0.15); }
+.skill-card.act-card:hover { border-color:var(--act); box-shadow:0 8px 24px rgba(74,222,128,0.15); }
+.skill-icon { font-size:1.6rem; margin-bottom:10px; }
+.skill-name { font-weight:500; font-size:0.9rem; margin-bottom:6px; }
+.skill-desc { font-size:0.77rem; color:var(--text-muted); line-height:1.55; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position:fixed; inset:0;
+  background:rgba(10,5,20,0.88);
+  backdrop-filter:blur(6px);
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  animation:fadeIn 0.15s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal {
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:16px;
+  padding:28px;
+  max-width:640px;
+  width:100%;
+  max-height:88vh;
+  overflow-y:auto;
+  animation:slideUp 0.2s ease;
+}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; }
+.modal-title { font-family:'DM Serif Display',serif; font-size:1.3rem; line-height:1.3; color:var(--text); margin-top:7px; }
+.close-btn { background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer; padding:0 4px; line-height:1; transition:color 0.15s; }
+.close-btn:hover { color:var(--text); }
+.modal-body { font-size:0.86rem; line-height:1.75; color:#c8bfe0; }
+.modal-body h4 { font-family:'DM Serif Display',serif; font-size:1rem; color:var(--text); margin:18px 0 7px; font-style:italic; }
+.modal-body ul,.modal-body ol { padding-left:20px; margin:8px 0; }
+.modal-body li { margin-bottom:6px; }
+.modal-body .highlight {
+  background:rgba(192,132,252,0.08);
+  border-left:3px solid var(--purple);
+  padding:11px 15px;
+  border-radius:0 6px 6px 0;
+  margin:14px 0;
+  font-style:italic;
+}
+.modal-body .highlight.dbt { background:rgba(244,114,182,0.08); border-left-color:var(--dbt); }
+.modal-body .highlight.act { background:rgba(74,222,128,0.08); border-left-color:var(--act); }
+.exercise-area { margin-top:22px; padding-top:18px; border-top:1px solid var(--border); }
+.exercise-area textarea { min-height:90px; margin-bottom:11px; }
+
+/* ── AI RESULT ── */
+.ai-result {
+  background:rgba(192,132,252,0.07);
+  border:1px solid rgba(192,132,252,0.2);
+  border-radius:8px;
+  padding:12px 15px;
+  font-size:0.82rem;
+  line-height:1.7;
+  color:#cbb8e8;
+  margin-top:11px;
+}
+.ai-result .ai-label { font-family:'DM Mono',monospace; font-size:0.6rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--purple); margin-bottom:6px; display:block; }
+
+/* ── MISC ── */
+.divider { border:none; border-top:1px solid var(--border); margin:24px 0; }
+.spinner { display:inline-block; width:13px; height:13px; border:2px solid rgba(192,132,252,0.25); border-top-color:var(--purple); border-radius:50%; animation:spin 0.7s linear infinite; }
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty { text-align:center; padding:50px 20px; color:var(--text-dim); }
+.empty-icon { font-size:2.5rem; margin-bottom:12px; opacity:0.3; }
+.empty p { font-size:0.84rem; }
+.settings-note { font-size:0.79rem; color:var(--text-muted); line-height:1.65; margin-top:10px; }
+.settings-note code { font-family:'DM Mono',monospace; background:var(--surface2); padding:2px 6px; border-radius:4px; font-size:0.74rem; color:var(--amber); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .skills-grid{grid-template-columns:1fr}
+  .nav-btn{font-size:0.72rem;padding:8px 6px}
+  .logo{font-size:1.5rem}
+  header{padding:20px 0 18px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header>
+  <div class="logo-wrap">
+    <svg class="logo-svg" width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="ig" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#c084fc"/>
+          <stop offset="50%" stop-color="#60a5fa"/>
+          <stop offset="100%" stop-color="#2dd4bf"/>
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="14" fill="#1a0533"/>
+      <circle cx="32" cy="32" r="18" fill="none" stroke="url(#ig)" stroke-width="2.5"/>
+      <path d="M32 20 Q39 26 32 32 Q25 38 32 44" fill="none" stroke="url(#ig)" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="32" cy="32" r="3.5" fill="url(#ig)"/>
+    </svg>
+    <div>
+      <div class="logo">Clarity</div>
+      <div class="tagline">CBT · DBT · ACT · Journal</div>
+    </div>
+  </div>
+  <div class="api-pill" id="apiStatus">
+    <div class="dot"></div>
+    <span>AI offline</span>
+  </div>
+</header>
+
+<nav id="mainNav">
+  <button class="nav-btn active" data-tab="journal">📓 Journal</button>
+  <button class="nav-btn" data-tab="cbt">🧠 CBT</button>
+  <button class="nav-btn" data-tab="dbt">🌊 DBT</button>
+  <button class="nav-btn" data-tab="act">🌿 ACT</button>
+  <button class="nav-btn" data-tab="settings">⚙ Settings</button>
+</nav>
+
+<!-- JOURNAL TAB -->
+<div id="tab-journal">
+  <div class="section-title">Journal Entry</div>
+  <p class="section-sub">Track what happened, how you felt, and what thoughts came up. No judgment — just noticing.</p>
+  <div class="card">
+    <div class="form-row">
+      <label>What happened? (situation)</label>
+      <textarea id="j-situation" rows="3" placeholder="Describe the situation briefly — what triggered this entry?"></textarea>
+    </div>
+    <div class="form-row">
+      <label>What did you feel?</label>
+      <div class="mood-row" id="moodRow">
+        <button class="mood-btn" data-mood>Overwhelmed</button>
+        <button class="mood-btn" data-mood>Shut down</button>
+        <button class="mood-btn" data-mood>Disconnected</button>
+        <button class="mood-btn" data-mood>Anxious</button>
+        <button class="mood-btn" data-mood>Frustrated</button>
+        <button class="mood-btn" data-mood>Numb</button>
+        <button class="mood-btn" data-mood>Confused</button>
+        <button class="mood-btn" data-mood>Calm</button>
+        <button class="mood-btn" data-mood>Flat</button>
+      </div>
+      <input type="text" id="j-emotion-custom" placeholder="Or type your own..." style="margin-top:10px;">
+    </div>
+    <div class="form-row">
+      <label>Intensity (0–10)</label>
+      <input type="range" id="j-intensity" min="0" max="10" value="5">
+      <div class="slider-labels"><span>0 — nothing</span><span>5 — moderate</span><span>10 — overwhelming</span></div>
+    </div>
+    <div class="form-row">
+      <label>Automatic thoughts</label>
+      <textarea id="j-thoughts" rows="2" placeholder="e.g. 'I should have reacted differently'"></textarea>
+    </div>
+    <div class="form-row">
+      <label>Body sensations / behaviours</label>
+      <textarea id="j-body" rows="2" placeholder="e.g. went quiet, heart racing, felt nothing..."></textarea>
+    </div>
+    <div class="form-row">
+      <label>Tag</label>
+      <select id="j-tag">
+        <option value="general">General log</option>
+        <option value="empathy-moment">Empathy / social moment</option>
+        <option value="shutdown">Shutdown / meltdown</option>
+        <option value="trauma">Trauma response</option>
+        <option value="progress">Progress / win</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-primary" id="saveEntryBtn">Save Entry</button>
+      <button class="btn btn-teal" id="aiReflectBtn" disabled>
+        <span class="spinner" style="display:none" id="reflectSpinner"></span>
+        ✦ AI Reflection
+      </button>
+    </div>
+    <div id="aiReflectResult" style="display:none;margin-top:14px;" class="ai-result">
+      <span class="ai-label">Clarity · AI Reflection</span>
+      <div id="aiReflectText"></div>
+    </div>
+  </div>
+  <hr class="divider">
+  <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:14px;color:var(--text);">Past Entries</div>
+  <div id="entriesList"></div>
+</div>
+
+<!-- CBT TAB -->
+<div id="tab-cbt" style="display:none;">
+  <div class="section-title">CBT Skills</div>
+  <p class="section-sub">Cognitive Behavioural Therapy — examining how thoughts, feelings, and behaviours connect.</p>
+  <div class="skills-grid" id="cbtGrid"></div>
+</div>
+
+<!-- DBT TAB -->
+<div id="tab-dbt" style="display:none;">
+  <div class="section-title">DBT Skills</div>
+  <p class="section-sub">Dialectical Behaviour Therapy — balancing acceptance and change. Emotional regulation, distress tolerance, interpersonal effectiveness.</p>
+  <div class="skills-grid" id="dbtGrid"></div>
+</div>
+
+<!-- ACT TAB -->
+<div id="tab-act" style="display:none;">
+  <div class="section-title">ACT Skills</div>
+  <p class="section-sub">Acceptance and Commitment Therapy — developing psychological flexibility by accepting what's out of your control and committing to valued action.</p>
+  <div class="skills-grid" id="actGrid"></div>
+</div>
+
+<!-- SETTINGS TAB -->
+<div id="tab-settings" style="display:none;">
+  <div class="section-title">Settings</div>
+  <p class="section-sub">Configure your Anthropic API key to enable AI reflections.</p>
+  <div class="card">
+    <div class="form-row">
+      <label>Anthropic API Key</label>
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
+      <p class="settings-note">
+        Stored only in your browser's <code>localStorage</code>. Sent only to <code>api.anthropic.com</code>.<br><br>
+        For GitHub Actions: add <code>ANTHROPIC_API_KEY</code> as a repository secret.<br><br>
+        Get a key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--purple);">console.anthropic.com</a>
+      </p>
+    </div>
+    <button class="btn btn-primary btn-sm" id="saveKeyBtn">Save Key</button>
+  </div>
+  <div class="card">
+    <div class="form-row">
+      <label>Export Journal</label>
+      <button class="btn btn-ghost" id="exportBtn">⬇ Download JSON</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="form-row">
+      <label style="color:var(--danger);">Clear all data</label>
+      <button class="btn btn-ghost btn-sm" id="clearAllBtn" style="border-color:var(--danger);color:var(--danger);">Delete everything</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<!-- SKILL MODAL -->
+<div id="skillModal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <span class="tag" id="modalTag"></span>
+        <div class="modal-title" id="modalTitle"></div>
+      </div>
+      <button class="close-btn" id="closeModalBtn">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="exercise-area">
+      <label>Practice space</label>
+      <textarea id="exerciseText" rows="4" placeholder="Work through the exercise here..."></textarea>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-teal btn-sm" id="exerciseAiBtn" disabled>
+          <span class="spinner" style="display:none" id="exerciseSpinner"></span>
+          ✦ AI Feedback
+        </button>
+        <button class="btn btn-ghost btn-sm" id="saveExerciseBtn">Save to Journal</button>
+      </div>
+      <div id="exerciseAiResult" style="display:none;margin-top:11px;" class="ai-result">
+        <span class="ai-label">Clarity · Skill Feedback</span>
+        <div id="exerciseAiText"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== SKILLS DATA =====
+const CBT_SKILLS = [
+  {
+    id: 'thought-record', icon: '📋', name: 'Thought Record',
+    desc: 'Examine and challenge automatic negative thoughts using a structured format.',
+    body: '<p>A thought record helps you slow down, notice what your mind is saying, and examine whether those thoughts are accurate.</p><h4>The 5-Column Method</h4><ol><li><strong>Situation:</strong> Facts only — no interpretation.</li><li><strong>Automatic thought:</strong> What did your mind say?</li><li><strong>Emotion + intensity:</strong> What did you feel? Rate 0–100.</li><li><strong>Evidence:</strong> What supports this thought? What contradicts it?</li><li><strong>Balanced thought:</strong> A more complete, realistic perspective.</li></ol><div class="highlight">Autistic note: You don\'t need to <em>feel</em> differently right away. Understanding a thought cognitively is enough. The goal is accuracy, not forced positivity.</div><h4>Example — Empathy situation</h4><ul><li>Situation: "My friend seemed upset after our conversation."</li><li>Automatic thought: "I must have said something wrong. I always hurt people."</li><li>Evidence against: They texted me later as normal. They\'ve had a stressful week. I can\'t read minds.</li><li>Balanced: "I don\'t have enough information to know if it was me."</li></ul>',
+    exercise: 'Think of a recent situation that left you feeling confused or bad about yourself. Work through the 5 columns: Situation, Automatic thought, Emotion, Evidence for/against, Balanced thought.'
+  },
+  {
+    id: 'cognitive-distortions', icon: '🔍', name: 'Cognitive Distortions',
+    desc: 'Identify thinking traps that make situations feel worse than they are.',
+    body: '<p>Cognitive distortions are patterns of thinking that distort reality in unhelpful ways. Recognising them creates distance from them.</p><h4>Key distortions</h4><ul><li><strong>Mind reading:</strong> Assuming you know what others think. ("They think I\'m weird.")</li><li><strong>Personalisation:</strong> Taking responsibility for things outside your control.</li><li><strong>All-or-nothing:</strong> No middle ground. ("I always say the wrong thing.")</li><li><strong>Fortune telling:</strong> Predicting negative outcomes.</li><li><strong>Emotional reasoning:</strong> Treating feelings as facts. ("I feel like a burden, so I am.")</li><li><strong>Should statements:</strong> Rigid rules. ("I should just know what they need.")</li><li><strong>Labelling:</strong> "I\'m broken." "I\'m cold."</li></ul><div class="highlight">Many autistic people don\'t lack empathy — they process and express it differently. Labels like "I\'m unempathetic" are distortions, not facts.</div>',
+    exercise: 'Write a thought that\'s been bothering you. Which distortion(s) does it match? Reframe it: "I notice I\'m mind-reading here."'
+  },
+  {
+    id: 'behavioural-activation', icon: '🌱', name: 'Behavioural Activation',
+    desc: 'Break the withdrawal cycle by scheduling small, meaningful activities.',
+    body: '<p>When overwhelmed, we withdraw — which reduces the positive experiences that would help us feel better. Behavioural activation interrupts this cycle.</p><div class="highlight">This doesn\'t mean forcing socialisation. It means choosing activities <em>you</em> find restorative — even solitary, repetitive, or sensory ones.</div><h4>Activity categories</h4><ul><li><strong>Achievement:</strong> Something that gives a sense of completion.</li><li><strong>Pleasure:</strong> Something that feels good to you.</li><li><strong>Connection:</strong> Any contact that doesn\'t feel draining.</li></ul><h4>The formula</h4><ol><li>Pick one small activity (10–30 mins)</li><li>Schedule a specific time</li><li>Do it regardless of mood</li><li>Note mood before and after — even a 1-point shift counts</li></ol>',
+    exercise: 'Name one activity from each category (achievement, pleasure, connection). Write a specific time/day for each.'
+  },
+  {
+    id: 'socratic-questioning', icon: '❓', name: 'Socratic Questioning',
+    desc: 'Use guided questions to examine the evidence behind your beliefs.',
+    body: '<p>Socratic questioning examines your thoughts with gentle curiosity rather than telling yourself you\'re wrong.</p><h4>Key questions</h4><ul><li>What\'s the evidence for this belief? What\'s against it?</li><li>Am I confusing a thought with a fact?</li><li>What would I say to a friend with this belief?</li><li>What\'s the worst that could happen? How likely? Could I cope?</li><li>Is there another way to see this?</li><li>Am I taking more responsibility than is fair?</li><li>What does this assume about other people\'s inner states?</li></ul><div class="highlight">For social confusion: "What would I need to <em>know</em> to be sure? Do I have that information, or am I filling a gap?"</div>',
+    exercise: 'Take a belief that\'s been making you feel bad. Answer at least 3 of the Socratic questions as honestly as you can.'
+  },
+  {
+    id: 'problem-solving', icon: '🗺', name: 'Problem Solving',
+    desc: 'A structured approach to navigating problems that feel overwhelming.',
+    body: '<p>When problems feel unsolvable, a structured approach can help you take one step forward.</p><h4>Steps</h4><ol><li><strong>Define the problem:</strong> Facts only, no interpretations.</li><li><strong>Brainstorm solutions:</strong> List everything — no filtering yet.</li><li><strong>Evaluate options:</strong> Pros, cons, feasibility.</li><li><strong>Choose one:</strong> Best-fit, not perfect.</li><li><strong>Plan:</strong> First 1–2 concrete steps.</li><li><strong>Review:</strong> What happened? What would you adjust?</li></ol><div class="highlight">If the problem involves a social situation you don\'t understand: "gather more information" is a valid solution step. You don\'t have to act before you understand.</div>',
+    exercise: 'Name one problem you\'ve been avoiding. Work through all 6 steps. Make step 5 as small and specific as possible.'
+  }
+];
+
+const DBT_SKILLS = [
+  {
+    id: 'tipp', icon: '🌡', name: 'TIPP',
+    desc: 'Rapidly reduce intense emotions by changing your body chemistry.',
+    body: '<p>TIPP works on the physical level — changing your body state shifts your emotional state. Useful when emotions are so intense that thinking clearly feels impossible.</p><h4>T — Temperature</h4><p>Splash cold water on your face or hold cold water for 30 seconds. This activates the dive reflex, slowing heart rate fast.</p><h4>I — Intense Exercise</h4><p>5–10 minutes of vigorous movement discharges built-up emotional energy.</p><h4>P — Paced Breathing</h4><p>Make your exhale longer than your inhale. Try: inhale 4 counts, exhale 6–8 counts. Repeat for 2–5 minutes.</p><h4>P — Progressive Muscle Relaxation</h4><p>Tense each muscle group for 5 seconds, then release. Start at feet, work upward.</p><div class="highlight dbt">TIPP is especially useful for autistic people experiencing sensory or emotional overload. Your nervous system is in genuine distress — TIPP works with your body, not against it.</div>',
+    exercise: 'Describe your last moment of emotional overwhelm. Which TIPP skill would have been most accessible? What would it look like practically?'
+  },
+  {
+    id: 'dear-man', icon: '🗣', name: 'DEAR MAN',
+    desc: 'Ask for what you need and say no effectively without harming relationships.',
+    body: '<p>DEAR MAN is a structured approach to getting what you need while respecting both yourself and the other person.</p><h4>D — Describe</h4><p>Stick to observable facts. "When X happened..." — no interpretations.</p><h4>E — Express</h4><p>"I feel Y..." — own your experience without blaming.</p><h4>A — Assert</h4><p>Clearly ask for what you need or say no. Don\'t assume they\'ll infer it.</p><h4>R — Reinforce</h4><p>Explain why meeting your request benefits them or the relationship.</p><h4>M — Mindful</h4><p>Stay on goal. "I understand, and I still need..."</p><h4>A — Appear confident</h4><p>Speak clearly and directly even if you don\'t feel it.</p><h4>N — Negotiate</h4><p>"If that doesn\'t work, what about...?"</p><div class="highlight dbt">Many autistic people struggle not from lacking empathy, but from not knowing how to communicate care or needs in neurotypical ways. DEAR MAN provides a script that removes some of that ambiguity.</div>',
+    exercise: 'Think of a request you\'ve been avoiding or a situation where you need to say no. Write your full DEAR MAN script for it.'
+  },
+  {
+    id: 'wise-mind', icon: '⚖', name: 'Wise Mind',
+    desc: 'Access the balance between emotional mind and rational mind.',
+    body: '<p>DBT describes three states of mind:</p><ul><li><strong>Emotion Mind:</strong> Driven entirely by feelings. Reactive, impulsive.</li><li><strong>Reasonable Mind:</strong> Cold logic only. Misses emotional reality.</li><li><strong>Wise Mind:</strong> The integration. It knows what you feel AND what you know. It has access to your values and your truth.</li></ul><div class="highlight dbt">For autistic people with trauma histories, Reasonable Mind can be a place of hiding — "I know intellectually it\'s fine" — while emotions remain unaddressed. Wise Mind includes <em>both</em>.</div><h4>How to access Wise Mind</h4><ul><li>Pause. Take a slow breath.</li><li>Ask: "What do I know to be true — not just think, not just feel?"</li><li>Wise Mind often feels quieter and more centred than either extreme.</li></ul>',
+    exercise: 'Think of a situation where Emotion Mind and Reasonable Mind are in conflict. Write what each is saying. Then write what your Wise Mind would say.'
+  },
+  {
+    id: 'radical-acceptance', icon: '🌊', name: 'Radical Acceptance',
+    desc: 'Reduce suffering by accepting reality as it is, without approval.',
+    body: '<p>Radical Acceptance is accepting reality completely — not agreeing with it, not liking it. Just: <em>this is what is.</em> Fighting reality causes suffering on top of pain.</p><div class="highlight dbt">This is relevant to living as an autistic person in a neurotypical world and to processing trauma. You didn\'t choose your nervous system. Accepting those realities — rather than raging against them — is an act of self-compassion.</div><h4>What it is NOT</h4><ul><li>Not approval ("this is fine")</li><li>Not giving up ("I won\'t try to change")</li><li>Not agreement ("they were right")</li></ul><h4>What it IS</h4><ul><li>Stopping the war against facts</li><li>Freeing energy from "why me" or "it shouldn\'t be this way"</li><li>Being fully in the present, with what is real</li></ul>',
+    exercise: 'What have you been fighting against accepting? Write what your resistance sounds like. Then write a statement of radical acceptance about it.'
+  },
+  {
+    id: 'opposite-action', icon: '↩', name: 'Opposite Action',
+    desc: 'Reduce unhelpful emotions by acting opposite to your emotional urge.',
+    body: '<p>When an emotion\'s action urge would make things worse, you can reduce that emotion by doing the <em>opposite</em>.</p><h4>Examples</h4><ul><li>Fear urge = avoid → Opposite: approach gradually</li><li>Shame urge = hide, isolate → Opposite: reach out, keep head up</li><li>Anger urge = attack → Opposite: engage gently, listen</li><li>Sadness urge = withdraw → Opposite: activate body, connect</li></ul><div class="highlight dbt">If shame makes you want to disappear after a social moment that felt "wrong," opposite action is to gently stay present rather than letting the shame spiral reinforce avoidance.</div><h4>Important check</h4><p>Only use opposite action when the emotion is <em>not justified</em> by facts, or when acting on it would make things worse.</p>',
+    exercise: 'Describe a situation where you acted on an emotion urge and it made things worse. What was the emotion? The urge? The outcome? What would opposite action have looked like?'
+  }
+];
+
+const ACT_SKILLS = [
+  {
+    id: 'defusion', icon: '🔓', name: 'Cognitive Defusion',
+    desc: 'Create distance from unhelpful thoughts so they have less power over you.',
+    body: '<p>Defusion means stepping back from your thoughts and seeing them as just thoughts — not facts, not commands, not your identity.</p><div class="highlight act">Thoughts like "I am broken" or "I must be unempathetic" can feel like objective truths. Defusion creates space between you and those thoughts without fighting or disproving them.</div><h4>Techniques</h4><ul><li><strong>Name it:</strong> "I\'m having the thought that I hurt them." Not "I hurt them."</li><li><strong>Label:</strong> "My mind is doing the \'I\'m broken\' story again."</li><li><strong>Silly voice:</strong> Repeat the thought in a cartoon voice — it breaks the emotional grip.</li><li><strong>Leaves on a stream:</strong> Imagine thoughts as leaves floating past on water. You watch them go.</li><li><strong>The radio:</strong> Your mind is a radio playing in the background. You don\'t have to listen.</li></ul><h4>The goal</h4><p>Not to eliminate the thought or feel better — just to hold it more lightly so it has less control over what you do next.</p>',
+    exercise: 'Write a thought that has power over you. Then write it again using "I\'m having the thought that..." Try the leaves-on-a-stream technique and describe what you noticed.'
+  },
+  {
+    id: 'values', icon: '🧭', name: 'Values Clarification',
+    desc: 'Identify what truly matters to you — separate from rules, expectations, or fear.',
+    body: '<p>Values are not goals (you can tick goals off). Values are directions — the way you want to move through life, regardless of outcome.</p><div class="highlight act">Many autistic people have spent years trying to meet neurotypical standards. Values work asks: what do <em>I</em> actually care about? Not what I "should" feel, but what genuinely matters.</div><h4>Life domains to explore</h4><ul><li>Relationships — what kind of person do you want to be with people you care about?</li><li>Work / creativity — what matters in how you engage with work?</li><li>Learning / growth — what do you want to develop in yourself?</li><li>Body / health — how do you want to care for your physical self?</li><li>Authenticity — what qualities do you want to embody?</li></ul><h4>Key question</h4><p>"If I weren\'t afraid, ashamed, or exhausted — what would I want my life in this area to be <em>about</em>?"</p>',
+    exercise: 'Pick 2–3 life domains. For each, write 2–3 sentences describing what matters to you. Which value are you most out of alignment with? Write one small action that would move you toward it.'
+  },
+  {
+    id: 'acceptance', icon: '🤲', name: 'Acceptance',
+    desc: 'Make room for difficult feelings without struggling against them.',
+    body: '<p>ACT acceptance is willingness to have the experience you\'re having without fighting it or trying to force it away. Struggle causes more suffering than the original feeling.</p><div class="highlight act">If you feel numb, disconnected, or flat — that\'s also an experience to accept, not fix. You don\'t have to feel the "right" things.</div><h4>The acceptance posture</h4><ul><li><strong>Notice:</strong> "I notice I\'m feeling ___ right now."</li><li><strong>Name:</strong> Give the feeling a label. "Something tight." "A kind of dread."</li><li><strong>Allow:</strong> "I can make room for this."</li><li><strong>Breathe:</strong> Imagine breathing around the feeling — creating space.</li><li><strong>Observe:</strong> Where is it in your body? What shape? Does it move?</li></ul><h4>What this is not</h4><p>Not liking the feeling. Not performing acceptance. Not being okay with harm. Just — not fighting what\'s already here.</p>',
+    exercise: 'Bring to mind something you\'ve been avoiding feeling. Sit with it for 2–3 minutes using the 5 steps. Afterwards: what was it? Where in your body? What happened when you stopped fighting it?'
+  },
+  {
+    id: 'present-moment', icon: '⏱', name: 'Present Moment Awareness',
+    desc: 'Anchor yourself in what is actually happening right now.',
+    body: '<p>Much suffering lives in the past (rumination) or future (anxiety). Present moment awareness deliberately brings attention to right now.</p><div class="highlight act">For autistic people, sensory awareness can be a strong present-moment anchor. What you see, hear, feel, or smell in this moment is immediate and real — sometimes more grounding than breath-focused mindfulness.</div><h4>Simple practices</h4><ul><li><strong>5-4-3-2-1 sensory:</strong> Notice 5 things you see, 4 you feel, 3 you hear, 2 you smell, 1 you taste.</li><li><strong>Slow description:</strong> Describe what\'s in front of you very slowly, as if narrating.</li><li><strong>Body anchor:</strong> Press your feet into the floor. Feel your weight. Notice the boundary of your body.</li><li><strong>Name the now:</strong> "Right now I am [sitting / in my room / breathing]. Right now I am okay."</li></ul>',
+    exercise: 'Do the 5-4-3-2-1 sensory exercise right now. Write what you noticed and whether your mental state shifted. What sensory anchor feels most grounding for you?'
+  },
+  {
+    id: 'committed-action', icon: '🪜', name: 'Committed Action',
+    desc: 'Take values-based steps, even when fear or discomfort shows up.',
+    body: '<p>Committed action is choosing to act in line with what matters to you — even when difficult feelings arise — rather than waiting until you feel ready.</p><div class="highlight act">Trauma responses and autistic shutdown can make action feel impossible. Committed action in ACT is about taking the <em>smallest possible step</em> that still moves you toward your values. A tiny step still counts.</div><h4>How to do it</h4><ul><li>Tie the action to a value: "I\'m doing this because I care about connection / honesty / growth."</li><li>Make it specific and small: not "be more empathetic" but "text one person back today."</li><li>Expect discomfort — you\'re not waiting to feel ready.</li><li>After: notice what you did. You acted in line with your values. That matters.</li></ul><h4>If you don\'t follow through</h4><p>Notice without self-punishment. Ask: "What got in the way?" Then plan the next smallest possible step.</p>',
+    exercise: 'Name one area where you\'ve been avoiding action. Identify the value it connects to. Write the single smallest action you could take this week — so small it feels almost too easy. When exactly will you do it?'
+  },
+  {
+    id: 'self-as-context', icon: '🌌', name: 'Self as Context',
+    desc: 'Recognise the observing "you" that is larger than any thought, feeling, or label.',
+    body: '<p>ACT distinguishes levels of self:</p><ul><li><strong>Conceptualised self:</strong> The story you have about yourself. "I am unempathetic." "I am broken."</li><li><strong>Self as process:</strong> Ongoing experience — "right now I\'m feeling..."</li><li><strong>Self as context (Observer Self):</strong> The stable "you" that notices all of it — without being any of it.</li></ul><div class="highlight act">The observer self cannot be damaged, defective, or unempathetic. It is the part that watches the thoughts about being broken — which means it is <em>not</em> those thoughts.</div><h4>The chessboard metaphor</h4><p>You are the chessboard, not the pieces. The pieces (thoughts, feelings, labels) move and conflict, but the board holds them all. You are not a piece. You are the space in which everything happens.</p><h4>Practice</h4><p>Notice a difficult thought. Ask: "Who is noticing this?" That quiet, steady awareness — that is the observer self.</p>',
+    exercise: 'Write a label you\'ve been carrying (e.g. "cold," "broken," "unempathetic"). Then write a paragraph from your observer self — the part that witnesses this label without being it. What does it notice? What does it know that the label doesn\'t capture?'
+  }
+];
+
+// ===== STATE =====
+let entries = [];
+let currentSkill = null;
+const TABS = ['journal','cbt','dbt','act','settings'];
+
+try { entries = JSON.parse(localStorage.getItem('clarity_entries') || '[]'); } catch(e) { entries = []; }
+
+// ===== API KEY =====
+const INJECTED_API_KEY = "CLARITY_BUILD_KEY_PLACEHOLDER";
+
+function getApiKey() {
+  try {
+    const stored = localStorage.getItem('clarity_api_key');
+    if (stored && stored.startsWith('sk-')) return stored;
+  } catch(e) {}
+  if (INJECTED_API_KEY && INJECTED_API_KEY.startsWith('sk-')) return INJECTED_API_KEY;
+  return '';
+}
+
+function updateApiStatus() {
+  const key = getApiKey();
+  const el = document.getElementById('apiStatus');
+  const hasKey = key && key.startsWith('sk-');
+  el.innerHTML = '<div class="dot"></div><span>' + (hasKey ? 'AI ready' : 'AI offline') + '</span>';
+  el.className = 'api-pill' + (hasKey ? ' ok' : '');
+  document.getElementById('aiReflectBtn').disabled = !hasKey;
+  const exBtn = document.getElementById('exerciseAiBtn');
+  if (exBtn) exBtn.disabled = !hasKey;
+}
+
+// ===== API CALL =====
+async function callClaude(messages, systemPrompt) {
+  const key = getApiKey();
+  if (!key) throw new Error('No API key. Add it in Settings.');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 600,
+      system: systemPrompt,
+      messages: messages
+    })
+  });
+  if (!res.ok) {
+    let err = {};
+    try { err = await res.json(); } catch(e) {}
+    throw new Error((err.error && err.error.message) || ('API error ' + res.status));
+  }
+  const data = await res.json();
+  return data.content[0].text;
+}
+
+const SYSTEM = 'You are Clarity — a compassionate, trauma-informed journal and skills coach. The user is autistic and has trauma responses, and is working on understanding empathy-related challenges. Key principles: Never suggest the user is broken or cold. Reframe "lack of empathy" as different processing. Use plain, direct language. Avoid vague affirmations. Honour neurodivergence. Keep responses to 3–5 sentences. End with one concrete question or suggestion.';
+
+// ===== TABS =====
+function showTab(name) {
+  TABS.forEach(function(t) {
+    var el = document.getElementById('tab-' + t);
+    if (el) el.style.display = (t === name) ? '' : 'none';
+  });
+  document.querySelectorAll('.nav-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.getAttribute('data-tab') === name);
+  });
+  if (name === 'settings') {
+    document.getElementById('apiKeyInput').value = getApiKey();
+  }
+}
+
+// ===== NAV — event delegation, no inline handlers =====
+document.getElementById('mainNav').addEventListener('click', function(e) {
+  var btn = e.target.closest('.nav-btn');
+  if (btn) showTab(btn.getAttribute('data-tab'));
+});
+
+// ===== JOURNAL =====
+document.getElementById('moodRow').addEventListener('click', function(e) {
+  var btn = e.target.closest('.mood-btn');
+  if (btn) btn.classList.toggle('selected');
+});
+
+function getSelectedMoods() {
+  return Array.from(document.querySelectorAll('.mood-btn.selected')).map(function(b) { return b.textContent; });
+}
+
+document.getElementById('aiReflectBtn').addEventListener('click', async function() {
+  var situation = document.getElementById('j-situation').value.trim();
+  if (!situation) { alert('Please describe the situation first.'); return; }
+  var moods = getSelectedMoods();
+  var custom = document.getElementById('j-emotion-custom').value.trim();
+  var thoughts = document.getElementById('j-thoughts').value.trim();
+
+  var btn = this;
+  var spinner = document.getElementById('reflectSpinner');
+  btn.disabled = true;
+  spinner.style.display = 'inline-block';
+
+  try {
+    var emotions = moods.concat(custom ? [custom] : []).filter(Boolean).join(', ') || 'not specified';
+    var prompt = 'Journal entry:\nSituation: ' + situation + '\nEmotions: ' + emotions + '\nAutomatic thoughts: ' + (thoughts || 'not specified') + '\n\nOffer a brief grounding reflection using CBT/DBT principles. Acknowledge what is hard, gently identify any cognitive distortions, and suggest one concrete skill or reframe.';
+    var response = await callClaude([{ role: 'user', content: prompt }], SYSTEM);
+    document.getElementById('aiReflectText').textContent = response;
+    document.getElementById('aiReflectResult').style.display = 'block';
+  } catch(e) {
+    document.getElementById('aiReflectText').textContent = 'Error: ' + e.message;
+    document.getElementById('aiReflectResult').style.display = 'block';
+  }
+  btn.disabled = false;
+  spinner.style.display = 'none';
+  updateApiStatus();
+});
+
+document.getElementById('saveEntryBtn').addEventListener('click', function() {
+  var situation = document.getElementById('j-situation').value.trim();
+  if (!situation) { alert('Please write a situation before saving.'); return; }
+  var moods = getSelectedMoods();
+  var custom = document.getElementById('j-emotion-custom').value.trim();
+  var aiText = document.getElementById('aiReflectText').textContent;
+
+  var entry = {
+    id: Date.now(),
+    date: new Date().toISOString(),
+    situation: situation,
+    emotions: moods.concat(custom ? [custom] : []).filter(Boolean),
+    intensity: document.getElementById('j-intensity').value,
+    thoughts: document.getElementById('j-thoughts').value.trim(),
+    body: document.getElementById('j-body').value.trim(),
+    tag: document.getElementById('j-tag').value,
+    aiReflection: aiText || null
+  };
+
+  entries.unshift(entry);
+  try { localStorage.setItem('clarity_entries', JSON.stringify(entries)); } catch(e) {}
+  renderEntries();
+
+  document.getElementById('j-situation').value = '';
+  document.getElementById('j-thoughts').value = '';
+  document.getElementById('j-body').value = '';
+  document.getElementById('j-emotion-custom').value = '';
+  document.getElementById('j-intensity').value = '5';
+  document.querySelectorAll('.mood-btn.selected').forEach(function(b) { b.classList.remove('selected'); });
+  document.getElementById('aiReflectResult').style.display = 'none';
+  document.getElementById('aiReflectText').textContent = '';
+  document.getElementById('j-tag').value = 'general';
+});
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function renderEntries() {
+  var el = document.getElementById('entriesList');
+  if (!entries.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📓</div><p>No entries yet. Write your first one above.</p></div>';
+    return;
+  }
+  el.innerHTML = entries.map(function(e) {
+    var d = new Date(e.date);
+    var dateStr = d.toLocaleDateString('en-GB', {weekday:'short',day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    var tagClass = e.tag === 'progress' ? 'cbt' : e.tag === 'empathy-moment' ? 'journal' : 'dbt';
+    var tagLabel = e.tag.replace(/-/g,' ');
+    var emotionStr = e.emotions && e.emotions.length ? '<span style="font-size:0.76rem;color:var(--text-muted)">' + escHtml(e.emotions.join(' · ')) + ' (' + escHtml(e.intensity) + '/10)</span>' : '';
+    var thoughtsStr = e.thoughts ? '<div class="entry-thoughts">' + escHtml(e.thoughts) + '</div>' : '';
+    var bodyStr = e.body ? '<div style="font-size:0.78rem;color:var(--text-dim);font-family:\'DM Mono\',monospace;margin-bottom:8px;">' + escHtml(e.body) + '</div>' : '';
+    var aiStr = e.aiReflection ? '<div class="entry-ai"><span class="ai-label">Clarity · AI Reflection</span>' + escHtml(e.aiReflection) + '</div>' : '';
+    return '<div class="card entry-card"><button class="delete-btn" data-id="' + e.id + '" title="Delete">×</button><div class="entry-meta"><span class="tag ' + tagClass + '">' + tagLabel + '</span><span class="entry-date">' + dateStr + '</span>' + emotionStr + '</div><div class="entry-body">' + escHtml(e.situation) + '</div>' + thoughtsStr + bodyStr + aiStr + '</div>';
+  }).join('');
+}
+
+document.getElementById('entriesList').addEventListener('click', function(e) {
+  var btn = e.target.closest('.delete-btn');
+  if (btn) {
+    var id = parseInt(btn.getAttribute('data-id'));
+    if (confirm('Delete this entry?')) {
+      entries = entries.filter(function(en) { return en.id !== id; });
+      try { localStorage.setItem('clarity_entries', JSON.stringify(entries)); } catch(e) {}
+      renderEntries();
+    }
+  }
+});
+
+// ===== SKILLS =====
+function renderSkills() {
+  function makeCard(skill, type) {
+    return '<div class="card skill-card ' + type + '-card" data-type="' + type + '" data-id="' + skill.id + '"><div class="skill-icon">' + skill.icon + '</div><div style="margin-bottom:6px;"><span class="tag ' + type + '">' + type.toUpperCase() + '</span></div><div class="skill-name">' + skill.name + '</div><div class="skill-desc">' + skill.desc + '</div></div>';
+  }
+  document.getElementById('cbtGrid').innerHTML = CBT_SKILLS.map(function(s) { return makeCard(s, 'cbt'); }).join('');
+  document.getElementById('dbtGrid').innerHTML = DBT_SKILLS.map(function(s) { return makeCard(s, 'dbt'); }).join('');
+  document.getElementById('actGrid').innerHTML = ACT_SKILLS.map(function(s) { return makeCard(s, 'act'); }).join('');
+}
+
+function openSkill(type, id) {
+  var list = type === 'cbt' ? CBT_SKILLS : type === 'dbt' ? DBT_SKILLS : ACT_SKILLS;
+  var skill = null;
+  for (var i = 0; i < list.length; i++) { if (list[i].id === id) { skill = list[i]; break; } }
+  if (!skill) return;
+  currentSkill = skill;
+
+  document.getElementById('modalTag').textContent = type.toUpperCase();
+  document.getElementById('modalTag').className = 'tag ' + type;
+  document.getElementById('modalTitle').textContent = skill.name;
+  var hlClass = type === 'dbt' ? ' dbt' : type === 'act' ? ' act' : '';
+  document.getElementById('modalBody').innerHTML = skill.body + '<div class="highlight' + hlClass + '"><strong>Exercise:</strong> ' + skill.exercise + '</div>';
+  document.getElementById('exerciseText').value = '';
+  document.getElementById('exerciseAiResult').style.display = 'none';
+  document.getElementById('exerciseAiText').textContent = '';
+  document.getElementById('exerciseAiBtn').disabled = !getApiKey();
+  document.getElementById('skillModal').style.display = 'flex';
+}
+
+// Skill card clicks — event delegation on each grid
+['cbtGrid','dbtGrid','actGrid'].forEach(function(gridId) {
+  document.getElementById(gridId).addEventListener('click', function(e) {
+    var card = e.target.closest('.skill-card');
+    if (card) openSkill(card.getAttribute('data-type'), card.getAttribute('data-id'));
+  });
+});
+
+document.getElementById('closeModalBtn').addEventListener('click', function() {
+  document.getElementById('skillModal').style.display = 'none';
+});
+document.getElementById('skillModal').addEventListener('click', function(e) {
+  if (e.target === this) this.style.display = 'none';
+});
+
+document.getElementById('exerciseAiBtn').addEventListener('click', async function() {
+  var text = document.getElementById('exerciseText').value.trim();
+  if (!text || !currentSkill) return;
+  var btn = this;
+  var spinner = document.getElementById('exerciseSpinner');
+  btn.disabled = true;
+  spinner.style.display = 'inline-block';
+  try {
+    var prompt = 'The user is practising the "' + currentSkill.name + '" skill. Their response:\n\n"' + text + '"\n\nGive brief, concrete feedback. Acknowledge what they did well, gently note anything to deepen, and offer one specific next step.';
+    var response = await callClaude([{ role: 'user', content: prompt }], SYSTEM);
+    document.getElementById('exerciseAiText').textContent = response;
+    document.getElementById('exerciseAiResult').style.display = 'block';
+  } catch(e) {
+    document.getElementById('exerciseAiText').textContent = 'Error: ' + e.message;
+    document.getElementById('exerciseAiResult').style.display = 'block';
+  }
+  btn.disabled = false;
+  spinner.style.display = 'none';
+});
+
+document.getElementById('saveExerciseBtn').addEventListener('click', function() {
+  var text = document.getElementById('exerciseText').value.trim();
+  if (!text || !currentSkill) return;
+  var entry = {
+    id: Date.now(),
+    date: new Date().toISOString(),
+    situation: '[' + currentSkill.name + ' exercise] ' + text,
+    emotions: [], intensity: '0', thoughts: '', body: '',
+    tag: 'general', aiReflection: null
+  };
+  entries.unshift(entry);
+  try { localStorage.setItem('clarity_entries', JSON.stringify(entries)); } catch(e) {}
+  renderEntries();
+  document.getElementById('skillModal').style.display = 'none';
+  showTab('journal');
+});
+
+// ===== SETTINGS =====
+document.getElementById('saveKeyBtn').addEventListener('click', function() {
+  var key = document.getElementById('apiKeyInput').value.trim();
+  try { localStorage.setItem('clarity_api_key', key); } catch(e) {}
+  updateApiStatus();
+  this.textContent = 'Saved ✓';
+  var self = this;
+  setTimeout(function() { self.textContent = 'Save Key'; }, 1500);
+});
+
+document.getElementById('exportBtn').addEventListener('click', function() {
+  var blob = new Blob([JSON.stringify(entries, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'clarity-journal-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+});
+
+document.getElementById('clearAllBtn').addEventListener('click', function() {
+  if (!confirm('This will permanently delete all your journal entries. Are you sure?')) return;
+  entries = [];
+  try { localStorage.removeItem('clarity_entries'); } catch(e) {}
+  renderEntries();
+});
+
+// ===== INIT =====
+renderSkills();
+renderEntries();
+updateApiStatus();
+</script>
+</body>
+</html>
